@@ -1,11 +1,10 @@
-import "./reset.css";
-import "./style.css";
-import { worker } from "./mocks/browser";
-import { response } from "msw";
+import './reset.css';
+import './style.css';
+import { worker } from './mocks/browser';
 
-worker.start({ onUnhandledRequest: "bypass" });
+worker.start({ onUnhandledRequest: 'bypass' });
 
-document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <main>
     <div class="wrapper">
       <h1 class="title">Yourssu Todo List</h1>
@@ -25,25 +24,26 @@ type Body = {
   status?: string;
 };
 
-const form = document.querySelector<HTMLFormElement>(".toto-form");
-const input = document.querySelector<HTMLInputElement>("input");
-const itemList = document.querySelector<HTMLUListElement>(".item-list");
+const form = document.querySelector<HTMLFormElement>('.toto-form');
+const input = document.querySelector<HTMLInputElement>('input');
+const itemList = document.querySelector<HTMLUListElement>('.item-list');
 
-form?.addEventListener("submit", async (event) => {
-  // body 설정
+form?.addEventListener('submit', submit);
+
+async function submit(event: SubmitEvent) {
   const todos = input?.value;
   const postBody: Body = {
     item: todos,
-    status: "NOT_DONE",
+    status: 'NOT_DONE',
   };
 
   event.preventDefault();
 
-  if (todos !== "") {
-    await fetch("todo", {
-      method: "POST",
+  if (todos !== '') {
+    await fetch('todo', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application-json",
+        'Content-Type': 'application-json',
       },
       body: JSON.stringify(postBody),
     })
@@ -51,32 +51,33 @@ form?.addEventListener("submit", async (event) => {
       .then((result) => {
         console.log(result);
         list(todos);
-        input!.value = "";
+        input!.value = '';
+        alert('값 넣기 성공');
       });
-    fetch("todo", {
-      method: "GET",
+    fetch('todo', {
+      method: 'GET',
     })
       .then((response) => response.json())
       .then((result) => console.log(result));
   } else {
-    alert("값 입력하세요");
+    alert('값 입력하세요');
   }
-});
+}
 
-function list(a: any) {
+function list(todo: any) {
   // 리스트 그리기
-  const id = document.querySelectorAll(".item-list li").length + 1;
-  const li = document.createElement("li");
-  li.className = "item";
-  const label = document.createElement("label");
-  label.setAttribute("for", id.toString());
-  label.innerText = a;
-  const span = document.createElement("span");
-  span.setAttribute("class", "cancle");
-  span.innerHTML = " &times;";
-  const input = document.createElement("input");
+  const id = document.querySelectorAll('.item-list li').length + 1;
+  const li = document.createElement('li');
+  li.className = 'item';
+  const label = document.createElement('label');
+  label.setAttribute('for', id.toString());
+  label.innerText = todo;
+  const span = document.createElement('span');
+  span.setAttribute('class', 'cancle');
+  span.innerHTML = ' &times;';
+  const input = document.createElement('input');
   input.id = id.toString();
-  input.type = "checkbox";
+  input.type = 'checkbox';
   label.appendChild(span);
   li.appendChild(label);
   li.appendChild(input);
@@ -90,31 +91,32 @@ function list(a: any) {
   const patchBody: Body = {
     id: id,
     item: todos,
-    status: "DONE",
+    status: 'DONE',
   };
 
   // 삭제버튼
-  span.addEventListener("click", async (e) => {
+  span.addEventListener('click', async (e) => {
     e.preventDefault();
-    await fetch("todo", {
-      method: "DELETE",
+    await fetch('todo', {
+      method: 'DELETE',
       body: JSON.stringify(deleteBody),
     }).then((result) => {
       console.log(result);
       li.remove();
+      alert('값 삭제 성공');
     });
-    fetch("todo", {
-      method: "GET",
+    fetch('todo', {
+      method: 'GET',
     })
       .then((response) => response.json())
       .then((result) => console.log(result));
   });
 
   // check
-  input.addEventListener("click", async (e) => {
+  input.addEventListener('click', async (e) => {
     e.preventDefault();
-    await fetch("todo", {
-      method: "PATCH",
+    await fetch('todo', {
+      method: 'PATCH',
       body: JSON.stringify(patchBody),
     })
       .then((response) => response.json())
@@ -122,8 +124,8 @@ function list(a: any) {
         input.checked = true;
         console.log(result);
       });
-    fetch("todo", {
-      method: "GET",
+    fetch('todo', {
+      method: 'GET',
     })
       .then((response) => response.json())
       .then((result) => console.log(result));
