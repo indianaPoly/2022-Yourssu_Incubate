@@ -30,42 +30,43 @@ const itemList = document.querySelector<HTMLUListElement>('.item-list');
 
 form?.addEventListener('submit', submit);
 
-async function submit(event: SubmitEvent) {
-  const todos = input?.value;
-  const postBody: Body = {
-    item: todos,
-    status: 'NOT_DONE',
-  };
+async function submit(event: SubmitEvent): Promise<void> {
+  if (input !== null) {
+    const todos: string = input.value;
+    const postBody: Body = {
+      item: todos,
+      status: 'NOT_DONE',
+    };
 
-  event.preventDefault();
+    event.preventDefault();
 
-  if (todos !== '') {
-    await fetch('todo', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application-json',
-      },
-      body: JSON.stringify(postBody),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        console.log(result);
-        list(todos);
-        input!.value = '';
-        alert('값 넣기 성공');
-      });
-    fetch('todo', {
-      method: 'GET',
-    })
-      .then((response) => response.json())
-      .then((result) => console.log(result));
-  } else {
-    alert('값 입력하세요');
+    if (todos !== '') {
+      await fetch('todo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application-json',
+        },
+        body: JSON.stringify(postBody),
+      })
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result);
+          list(todos);
+          input!.value = '';
+          alert('값 넣기 성공');
+        });
+      fetch('todo', {
+        method: 'GET',
+      })
+        .then((response) => response.json())
+        .then((result) => console.log(result));
+    } else {
+      alert('값 입력하세요');
+    }
   }
 }
 
-function list(todo: any) {
-  // 리스트 그리기
+function list(todo: string) {
   const id = document.querySelectorAll('.item-list li').length + 1;
   const li = document.createElement('li');
   li.className = 'item';
@@ -75,59 +76,79 @@ function list(todo: any) {
   const span = document.createElement('span');
   span.setAttribute('class', 'cancle');
   span.innerHTML = ' &times;';
+  deleteEvent(span, li, id);
   const input = document.createElement('input');
   input.id = id.toString();
   input.type = 'checkbox';
+  patchEvent(input, id);
   label.appendChild(span);
   li.appendChild(label);
   li.appendChild(input);
   itemList?.append(li);
+}
 
-  // body 설정
-  const todos = input?.value;
+function deleteEvent(
+  span: HTMLSpanElement,
+  li: HTMLLIElement,
+  id: number,
+): void {
+  if (span !== null)
+    span.addEventListener('click', (e: MouseEvent) => {
+      e.preventDefault();
+      fetchDelete(li, id);
+    });
+}
+
+async function fetchDelete(li: HTMLLIElement, id: number): Promise<void> {
   const deleteBody: Body = {
     id: id,
   };
+
+  await fetch('todo', {
+    method: 'DELETE',
+    body: JSON.stringify(deleteBody),
+  })
+    .then((res) => res.json())
+    .then((result) => {
+      console.log(result);
+      li?.remove();
+      alert('삭제 성공');
+    });
+  fetchGet();
+}
+
+function fetchGet(): void {
+  fetch('todo', {
+    method: 'GET',
+  })
+    .then((res) => res.json())
+    .then((result) => console.log(result));
+}
+
+function patchEvent(input: HTMLInputElement, id: number): void {
+  if (input !== null)
+    input.addEventListener('click', (e) => {
+      e.preventDefault();
+      fetchPatch(input, id);
+    });
+}
+
+async function fetchPatch(input: HTMLInputElement, id: number): Promise<void> {
+  const todos: string = input.value;
   const patchBody: Body = {
     id: id,
     item: todos,
     status: 'DONE',
   };
 
-  // 삭제버튼
-  span.addEventListener('click', async (e) => {
-    e.preventDefault();
-    await fetch('todo', {
-      method: 'DELETE',
-      body: JSON.stringify(deleteBody),
-    }).then((result) => {
+  await fetch('todo', {
+    method: 'PATCH',
+    body: JSON.stringify(patchBody),
+  })
+    .then((res) => res.json())
+    .then((result) => {
+      if (input !== null) input.checked = true;
       console.log(result);
-      li.remove();
-      alert('값 삭제 성공');
     });
-    fetch('todo', {
-      method: 'GET',
-    })
-      .then((response) => response.json())
-      .then((result) => console.log(result));
-  });
-
-  // check
-  input.addEventListener('click', async (e) => {
-    e.preventDefault();
-    await fetch('todo', {
-      method: 'PATCH',
-      body: JSON.stringify(patchBody),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        input.checked = true;
-        console.log(result);
-      });
-    fetch('todo', {
-      method: 'GET',
-    })
-      .then((response) => response.json())
-      .then((result) => console.log(result));
-  });
+  fetchGet();
 }
