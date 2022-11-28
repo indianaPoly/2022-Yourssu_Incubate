@@ -55,11 +55,7 @@ async function submit(event: SubmitEvent): Promise<void> {
           input!.value = '';
           alert('값 넣기 성공');
         });
-      fetch('todo', {
-        method: 'GET',
-      })
-        .then((response) => response.json())
-        .then((result) => console.log(result));
+      fetchGet();
     } else {
       alert('값 입력하세요');
     }
@@ -122,7 +118,10 @@ function fetchGet(): void {
     method: 'GET',
   })
     .then((res) => res.json())
-    .then((result) => console.log(result));
+    .then((result) => {
+      // result.todos
+      console.log(result);
+    });
 }
 
 function patchEvent(input: HTMLInputElement, id: number): void {
