@@ -23,6 +23,7 @@ type Body = {
   item?: string;
   status?: string;
 };
+const url: string = 'todo';
 
 const form = document.querySelector<HTMLFormElement>('.toto-form');
 const input = document.querySelector<HTMLInputElement>('input');
@@ -41,18 +42,18 @@ async function submit(event: SubmitEvent): Promise<void> {
     event.preventDefault();
 
     if (todos !== '') {
-      await fetch('todo', {
+      await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application-json',
         },
         body: JSON.stringify(postBody),
       })
-        .then((response) => response.json())
+        .then((res) => res.json())
         .then((result) => {
           console.log(result);
           list(todos);
-          input!.value = '';
+          if (input.value !== null) input.value = '';
           alert('값 넣기 성공');
         });
       fetchGet();
@@ -100,7 +101,7 @@ async function fetchDelete(li: HTMLLIElement, id: number): Promise<void> {
     id: id,
   };
 
-  await fetch('todo', {
+  await fetch(url, {
     method: 'DELETE',
     body: JSON.stringify(deleteBody),
   })
@@ -114,13 +115,12 @@ async function fetchDelete(li: HTMLLIElement, id: number): Promise<void> {
 }
 
 function fetchGet(): void {
-  fetch('todo', {
+  fetch(url, {
     method: 'GET',
   })
     .then((res) => res.json())
     .then((result) => {
-      // result.todos
-      console.log(result);
+      console.log(result.todos);
     });
 }
 
@@ -140,7 +140,7 @@ async function fetchPatch(input: HTMLInputElement, id: number): Promise<void> {
     status: 'DONE',
   };
 
-  await fetch('todo', {
+  await fetch(url, {
     method: 'PATCH',
     body: JSON.stringify(patchBody),
   })
