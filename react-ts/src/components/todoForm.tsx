@@ -1,11 +1,8 @@
-import React, { ChangeEvent, useState } from 'react'
+import React, { useState } from 'react'
 import { postAxiosTodoData } from '../api'
 
 const TodoForm = (): JSX.Element => {
   const [text, setText] = useState('')
-  const displayText = (event: ChangeEvent<HTMLInputElement>) => {
-    setText(event.target.value)
-  }
   return (
     <form
       className="mt-5"
@@ -18,7 +15,9 @@ const TodoForm = (): JSX.Element => {
         id="todoFormInput"
         className="border border-grey-300 rounded-md h-10"
         placeholder="입력하세요."
-        onChange={displayText}
+        onChange={(event) => {
+          setText(event.target.value)
+        }}
       />
       <button
         type="submit"

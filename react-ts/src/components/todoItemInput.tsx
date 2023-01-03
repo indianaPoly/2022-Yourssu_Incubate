@@ -1,11 +1,11 @@
 import React from 'react'
 import { patchAxiosTodoData } from '../api'
 
-interface PatchBody {
+interface PropsTodoItemInput {
   id?: string
 }
 
-const ItemInput = ({ id }: PatchBody) => {
+const TodoItemInput = ({ id }: PropsTodoItemInput): JSX.Element => {
   return (
     <input
       id={id}
@@ -14,10 +14,9 @@ const ItemInput = ({ id }: PatchBody) => {
         event.target.checked = true
         event.preventDefault()
         if (id !== undefined) patchAxiosTodoData(id)
-        // 처리하고 나서 이벤트 view 변경해야됩니다.
       }}
     />
   )
 }
 
-export default ItemInput
+export default TodoItemInput

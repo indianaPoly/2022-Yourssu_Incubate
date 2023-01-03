@@ -16,41 +16,35 @@ const restUrl: string = 'todo'
 // }
 
 export const postAxiosTodoData = async (itemData: string) => {
-  await axios({
+  const response = await axios({
     method: 'post',
     url: restUrl,
     data: {
       item: itemData,
     },
-  }).then((postAxiosTodoDataResponse) => {
-    console.log(postAxiosTodoDataResponse.data)
   })
-  // .then(getAxiosTodoData)
+  console.log(response.data)
 }
 
 export const deleteAxiosTodoData = async (id: string) => {
-  axios({
+  const response = await axios({
     method: 'delete',
     url: restUrl,
     data: {
       id,
     },
-  }).then((deleteAxiosTodoDataResponse) => {
-    console.log(deleteAxiosTodoDataResponse.data)
   })
-  // .then(getAxiosTodoData)
+  console.log(response.data)
 }
 
 export const patchAxiosTodoData = async (id: string) => {
-  axios({
+  const response = await axios({
     method: 'patch',
     url: restUrl,
     data: {
       id,
       status: 'DONE',
     },
-  }).then((patchAxiosTodoDataResponse) => {
-    console.log(patchAxiosTodoDataResponse.data)
   })
-  // .then(getAxiosTodoData)
+  console.log(response.data)
 }
